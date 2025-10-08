@@ -21,16 +21,15 @@ jobs:
         java-version: 11
 
     - name: Setup Google Chrome
-      # This installs a stable version of Chrome
+      # Install Chrome first. This installs a stable version of Chrome.
       uses: browser-actions/setup-chrome@v1
 
-    - name: Setup ChromeDriver
-      uses: nanasess/setup-chromedriver@v1
-      with:
-        # 🔑 FIX: Specify a known-good, stable ChromeDriver version 
-        # to avoid the '404 Not Found' error from the 'latest' or auto-detection failures.
-        # Check official sources for the newest version and update this string.
-        chromedriver-version: '128.0.6588.10' 
+    - name: Setup ChromeDriver (FIXED ACTION)
+      # 🔑 FIX: Replacing the unreliable 'nanasess' action with a different one.
+      # This action should correctly handle the new Chrome for Testing (CfT) download paths.
+      uses: w9jds/setup-chromedriver@v1
+      # No 'with' is needed here, as it should auto-detect the version of Chrome 
+      # installed by the previous step.
 
     - name: Cache Maven dependencies
       uses: actions/cache@v3
