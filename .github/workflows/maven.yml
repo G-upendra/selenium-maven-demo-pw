@@ -25,8 +25,9 @@ jobs:
 
     - name: Setup ChromeDriver
       uses: nanasess/setup-chromedriver@v1
-      with:
-        chromedriver-version: latest
+      # Note: The 'with' block for 'chromedriver-version: latest' is removed.
+      # The action will now automatically detect the version compatible 
+      # with the installed Google Chrome, resolving the 404 error.
 
     - name: Cache Maven dependencies
       uses: actions/cache@v3
