@@ -1,31 +1,64 @@
-import io.github.bonigarcia.wdm.WebDriverManager; // ⬅️ Import this
+import io.github.bonigarcia.wdm.WebDriverManager; 
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-// ... other necessary imports ...
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod; 
+import org.testng.annotations.BeforeMethod; 
+import org.testng.annotations.Test;
 
 public class GoogleTest {
 
     private WebDriver driver;
 
-    // Example setup method (e.g., @BeforeEach in JUnit 5)
+    @BeforeMethod
     public void setupTest() {
-        // 🔑 THE CRITICAL FIX: WebDriverManager downloads and configures the 
-        // correct ChromeDriver binary path. This replaces the need for the GitHub Action.
+        // 🔑 FIX CONFIRMATION: WebDriverManager handles the ChromeDriver download and setup.
         WebDriverManager.chromedriver().setup(); 
         
-        // Initialize the driver using the configured binary
+        // Initialize the driver
         driver = new ChromeDriver();
+        
+        // Optional: Maximize the window for better visibility/interactivity
+        driver.manage().window().maximize();
     }
     
-    // Example test method
-    // @Test
-    public void testGoogleSearch() {
+    @Test
+    public void testGoogleSearchForSelenium() {
+        // 1. Navigate to Google
         driver.get("https://www.google.com");
-        // ... rest of your test logic ...
+        
+        // Optional: Assert that the title is as expected before proceeding (for confidence)
+        String actualTitle = driver.getTitle();
+        // Google titles often change based on location, so a partial check is safer
+        Assert.assertTrue(actualTitle.contains("Google"), "Page title is not correct.");
+        
+        // 2. Locate the Search Bar
+        // The search input field on the Google homepage usually has the name attribute "q"
+        WebElement searchBox = driver.findElement(By.name("q"));
+        
+        // 3. Type "selenium" into the search bar
+        String searchTerm = "selenium";
+        searchBox.sendKeys(searchTerm);
+        
+        // 4. Submit the search by pressing the ENTER key
+        searchBox.sendKeys(Keys.ENTER);
+        
+        // 5. Verification (Assert that the search was successful)
+        // The title of the results page should contain the search term
+        String resultsPageTitle = driver.getTitle();
+        System.out.println("Results Page Title: " + resultsPageTitle);
+        
+        // Assert that the title contains the search term and "Google Search"
+        Assert.assertTrue(resultsPageTitle.contains(searchTerm), 
+                          "Verification Failed: Results page title does not contain the search term.");
     }
 
-    // Example teardown method (e.g., @AfterEach in JUnit 5)
+    @AfterMethod
     public void teardownTest() {
+        // Close the browser after the test completes
         if (driver != null) {
             driver.quit();
         }
