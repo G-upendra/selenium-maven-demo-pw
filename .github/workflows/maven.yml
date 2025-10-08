@@ -21,15 +21,11 @@ jobs:
         java-version: 11
 
     - name: Setup Google Chrome
-      # Install Chrome first. This installs a stable version of Chrome.
-      uses: browser-actions/setup-chrome@v1
-
-    - name: Setup ChromeDriver (FIXED ACTION)
-      # 🔑 FIX: Replacing the unreliable 'nanasess' action with a different one.
-      # This action should correctly handle the new Chrome for Testing (CfT) download paths.
-      uses: w9jds/setup-chromedriver@v1
-      # No 'with' is needed here, as it should auto-detect the version of Chrome 
-      # installed by the previous step.
+      # Retain this to ensure Chrome is installed for your tests
+      uses: browser-actions/setup-chrome@v1 
+      
+    # ❌ REMOVED THE FAILING 'nanasess/setup-chromedriver' STEP. 
+    # Driver setup is now handled by Java (WebDriverManager).
 
     - name: Cache Maven dependencies
       uses: actions/cache@v3
