@@ -21,13 +21,16 @@ jobs:
         java-version: 11
 
     - name: Setup Google Chrome
+      # This installs a stable version of Chrome
       uses: browser-actions/setup-chrome@v1
 
     - name: Setup ChromeDriver
       uses: nanasess/setup-chromedriver@v1
-      # Note: The 'with' block for 'chromedriver-version: latest' is removed.
-      # The action will now automatically detect the version compatible 
-      # with the installed Google Chrome, resolving the 404 error.
+      with:
+        # 🔑 FIX: Specify a known-good, stable ChromeDriver version 
+        # to avoid the '404 Not Found' error from the 'latest' or auto-detection failures.
+        # Check official sources for the newest version and update this string.
+        chromedriver-version: '128.0.6588.10' 
 
     - name: Cache Maven dependencies
       uses: actions/cache@v3
