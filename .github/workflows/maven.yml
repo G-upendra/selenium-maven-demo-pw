@@ -2,59 +2,46 @@ name: Run Selenium Tests
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  selenium-test:
+  selenium-tests:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout repository
-      - name: Checkout repository
+      # Step 2.1: Checkout your repo
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # Set up JDK 11
+      # Step 2.2: Set up Java
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: 11
 
-      # Verify Chrome version
-      - name: Check Google Chrome version
-        run: google-chrome --version
+      # Step 2.3: Set up Chrome browser
+      - name: Install Google Chrome
+        uses: browser-actions/setup-chrome@v1
 
-      # Install matching ChromeDriver
-      - name: Install ChromeDriver
-        run: |
-          # Get Chrome major version only
-          CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d '.' -f1)
-          echo "Detected Chrome major version: $CHROME_VERSION"
+      # Step 2.4: Set up ChromeDriver (matching version automatically)
+      - name: Setup ChromeDriver
+        uses: nanasess/setup-chromedriver@v1
+        with:
+          chrome-version: latest  # automatically matches Chrome
 
-          # Get latest matching ChromeDriver
-          CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-          echo "ChromeDriver version: $CHROMEDRIVER_VERSION"
-
-          # Download and install ChromeDriver
-          wget -q "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
-          unzip chromedriver_linux64.zip
-          sudo mv chromedriver /usr/local/bin/
-          sudo chmod +x /usr/local/bin/
-          chromedriver --version
-
-      # Cache Maven dependencies
+      # Step 2.5: Cache Maven dependencies (optional, faster builds)
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      # Run Maven tests
-      - name: Run Selenium tests
-        run: mvn test
+      # Step 2.6: Run Maven build + tests
+      - name: Build and test with Maven
+        run: mvn clean test
